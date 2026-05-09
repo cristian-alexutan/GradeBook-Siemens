@@ -5,11 +5,11 @@ namespace Siemens.Internship2026.GradeBook.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ItemController : ControllerBase
+public class GradeController : ControllerBase
 {
-    private readonly IItemReader _reader;
+    private readonly IGradeReader _reader;
 
-    public ItemController(IItemReader reader)
+    public GradeController(IGradeReader reader)
     {
         _reader = reader;
     }
