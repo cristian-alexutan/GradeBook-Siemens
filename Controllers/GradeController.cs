@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Siemens.Internship2026.GradeBook.Interfaces;
+using Siemens.Internship2026.GradeBook.Models;
+using Siemens.Internship2026.GradeBook.Services;
 
 namespace Siemens.Internship2026.GradeBook.Controllers;
 
@@ -7,55 +9,51 @@ namespace Siemens.Internship2026.GradeBook.Controllers;
 [Route("api/[controller]")]
 public class GradeController : ControllerBase
 {
-    private readonly IGradeReader _reader;
+    private readonly IGradeService _service;
 
-    public GradeController(IGradeReader reader)
+    public GradeController(IGradeService service)
     {
-        _reader = reader;
+        _service = service;
     }
+
+    // Separate endpoints for getting all the grades and getting the statistics
+    // This fits better with REST principles, as each endpoint has a single responsibility
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        Console.WriteLine($"[LOG] {DateTime.UtcNow}: GET api/grade called");
+        var grades = await _service.GetAllGradesAsync();
 
-        var grades = await _reader.GetAllAsync();
-        var gradeList = grades.ToList();
+        return Ok(grades);
+    }
 
-        var totalCount = gradeList.Count;
-        var averageValue = gradeList.Any() ? gradeList.Average(i => i.Value) : 0;
+    [HttpGet("statistics")]
+    public async Task<IActionResult> GetStatistics()
+    {
+        var statistics = await _service.GetStatisticsAsync();
 
-        Console.WriteLine($"[LOG] Returning {totalCount} grades, average value: {averageValue}");
+        return Ok(statistics);
+    }
 
-        return Ok(new
-        {
-            Data = gradeList,
-            Statistics = new
-            {
-                TotalCount = totalCount,
-                AverageValue = averageValue,
-                RetrievedAt = DateTime.UtcNow
-            }
-        });
+    [HttpGet("passing/top/{n}")]
+    public async Task<IActionResult> GetFirstNPassingActive(int n)
+    {
+        if (n <= 0)
+            return BadRequest("N must be a positive integer.");
+
+        var grades = await _service.GetFirstNPassingActiveGradesAsync(n);
+        return Ok(grades);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        Console.WriteLine($"[LOG] {DateTime.UtcNow}: GET api/grade/{id} called");
-
         if (id <= 0)
-        {
-            Console.WriteLine($"[LOG] Invalid id: {id}");
             return BadRequest("Id must be a positive integer.");
-        }
 
-        var grade = await _reader.GetByIdAsync(id);
+        var grade = await _service.GetGradeByIdAsync(id);
         if (grade == null)
-        {
-            Console.WriteLine($"[LOG] Grade {id} not found");
             return NotFound($"Grade with Id {id} was not found.");
-        }
 
         return Ok(grade);
     }
