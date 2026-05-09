@@ -36,7 +36,7 @@ namespace Siemens.Internship2026.GradeBook.Services
             // Here, I assumed it means the top N grades by value
             _logger.LogInformation("GET api/grade/passing/top called with N={N}", n);
             var grades = await _reader.GetAllAsync();
-            var result = grades.Where(currentGrade => currentGrade.IsActive && currentGrade.Value >= 5)
+            var result = grades.Where(currentGrade => currentGrade.Value >= 5)
                 .OrderByDescending(currentGrade => currentGrade.Value)
                 .Take(n)
                 .ToList();

@@ -15,7 +15,8 @@ public class GradeRepository : IGradeReader
 
     public async Task<IEnumerable<Grade>> GetAllAsync()
     {
-        return await _apiClient.FetchAllAsync();
+        var all = await _apiClient.FetchAllAsync();
+        return all.Where(currentGrade => currentGrade.IsActive);
     }
 
     public async Task<Grade?> GetByIdAsync(int id)
