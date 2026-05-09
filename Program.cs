@@ -1,3 +1,4 @@
+using Siemens.Internship2026.GradeBook.ApiClients;
 using Siemens.Internship2026.GradeBook.Interfaces;
 using Siemens.Internship2026.GradeBook.Repositories;
 using Siemens.Internship2026.GradeBook.Services;
@@ -5,8 +6,9 @@ using Siemens.Internship2026.GradeBook.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-builder.Services.AddSingleton<IGradeReader, GradeRepository>();
-builder.Services.AddSingleton<IGradeService, GradeService>();
+builder.Services.AddHttpClient<IGradeApiClient, GradeApiClient>();
+builder.Services.AddScoped<IGradeReader, GradeRepository>();
+builder.Services.AddScoped<IGradeService, GradeService>();
 
 var app = builder.Build();
 

@@ -1,3 +1,4 @@
+using Siemens.Internship2026.GradeBook.ApiClients;
 using Siemens.Internship2026.GradeBook.Interfaces;
 using Siemens.Internship2026.GradeBook.Models;
 
@@ -5,18 +6,22 @@ namespace Siemens.Internship2026.GradeBook.Repositories;
 
 public class GradeRepository : IGradeReader
 {
-    private readonly List<Grade> _grades = new();
-    // private int _nextId = 1; <- unused field
+    private readonly IGradeApiClient _apiClient;
 
-    public Task<Grade?> GetByIdAsync(int id)
+    public GradeRepository(IGradeApiClient apiClient)
     {
-        var grade = _grades.FirstOrDefault(currentGrade => currentGrade.Id == id && currentGrade.IsActive);
-        return Task.FromResult(grade);
+        _apiClient = apiClient;
     }
 
-    public Task<IEnumerable<Grade>> GetAllAsync()
+    public async Task<IEnumerable<Grade>> GetAllAsync()
     {
-        var grades = _grades.Where(currentGrade => currentGrade.IsActive).AsEnumerable();
-        return Task.FromResult(grades);
+        return await _apiClient.FetchAllAsync();
+    }
+
+    public async Task<Grade?> GetByIdAsync(int id)
+    {
+        // The external API does not support querying by ID, so we fetch all grades and filter locally.
+        var all = await _apiClient.FetchAllAsync();
+        return all.FirstOrDefault(currentGrade => currentGrade.Id == id && currentGrade.IsActive);
     }
 }
