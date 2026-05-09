@@ -10,13 +10,13 @@ public class GradeRepository : IGradeReader
 
     public Task<Grade?> GetByIdAsync(int id)
     {
-        var item = _grades.FirstOrDefault(i => i.Id == id && i.IsActive);
-        return Task.FromResult(item);
+        var grade = _grades.FirstOrDefault(i => i.Id == id && i.IsActive);
+        return Task.FromResult(grade);
     }
 
     public Task<IEnumerable<Grade>> GetAllAsync()
     {
-        var items = _grades.Where(i => i.IsActive).AsEnumerable();
-        return Task.FromResult(items);
+        var grades = _grades.Where(i => i.IsActive).AsEnumerable();
+        return Task.FromResult(grades);
     }
 }
