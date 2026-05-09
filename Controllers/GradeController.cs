@@ -17,19 +17,19 @@ public class GradeController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        Console.WriteLine($"[LOG] {DateTime.UtcNow}: GET api/item called");
+        Console.WriteLine($"[LOG] {DateTime.UtcNow}: GET api/grade called");
 
-        var items = await _reader.GetAllAsync();
-        var itemList = items.ToList();
+        var grades = await _reader.GetAllAsync();
+        var gradeList = grades.ToList();
 
-        var totalCount = itemList.Count;
-        var averageValue = itemList.Any() ? itemList.Average(i => i.Value) : 0;
+        var totalCount = gradeList.Count;
+        var averageValue = gradeList.Any() ? gradeList.Average(i => i.Value) : 0;
 
-        Console.WriteLine($"[LOG] Returning {totalCount} items, average value: {averageValue}");
+        Console.WriteLine($"[LOG] Returning {totalCount} grades, average value: {averageValue}");
 
         return Ok(new
         {
-            Data = itemList,
+            Data = gradeList,
             Statistics = new
             {
                 TotalCount = totalCount,
@@ -42,7 +42,7 @@ public class GradeController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        Console.WriteLine($"[LOG] {DateTime.UtcNow}: GET api/item/{id} called");
+        Console.WriteLine($"[LOG] {DateTime.UtcNow}: GET api/grade/{id} called");
 
         if (id <= 0)
         {
@@ -50,13 +50,13 @@ public class GradeController : ControllerBase
             return BadRequest("Id must be a positive integer.");
         }
 
-        var item = await _reader.GetByIdAsync(id);
-        if (item == null)
+        var grade = await _reader.GetByIdAsync(id);
+        if (grade == null)
         {
-            Console.WriteLine($"[LOG] Item {id} not found");
-            return NotFound($"Item with Id {id} was not found.");
+            Console.WriteLine($"[LOG] Grade {id} not found");
+            return NotFound($"Grade with Id {id} was not found.");
         }
 
-        return Ok(item);
+        return Ok(grade);
     }
 }
